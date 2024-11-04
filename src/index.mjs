@@ -28,7 +28,13 @@ app.get("/api/users", (request, response) => {
   const {
     query: { filter, value },
   } = request;
-  if (!filter && !value) return response.send(mockUsers);
+  // when filter and value exists
+  if (filter && value)
+    return response.send(
+      mockUsers.filter((user) => user[filter].includes(value))
+    );
+  // when filter and/or value are defined
+  return response.send(mockUsers);
 });
 
 app.get("/api/users/:id", (request, response) => {
