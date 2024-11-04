@@ -1,6 +1,7 @@
 import express from "express";
 
 const app = express();
+app.use(express.json());
 
 const mockUsers = [
   {
@@ -37,6 +38,14 @@ app.get("/api/users", (request, response) => {
   return response.send(mockUsers);
 });
 
+app.post("/api/users", (request, response) => {
+  // unpacking in javascript: where { body } on the left side of the assignment means "take the body property from the request object and assign it to a new variable also named body"
+  const { body } = request;
+  const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...body };
+  mockUsers.push(newUser);
+  return response.status(200).send(newUser);
+});
+
 app.get("/api/users/:id", (request, response) => {
   const id = request.params.id;
   const parsedId = parseInt(id);
@@ -45,6 +54,14 @@ app.get("/api/users/:id", (request, response) => {
   if (!findUser)
     return response.status(404).json(`User with ID '${id}' not found!`);
   return response.send(findUser);
+});
+
+// a PUT request affects the entire record the requesrt is made to.
+app.put("/api/users/:id", (request, response) => {
+  const {
+    body,
+    params: { id },
+  } = request;
 });
 
 const PORT = process.env.PORT || 3000;
